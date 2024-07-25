@@ -1,4 +1,4 @@
-package de.regiobiomatch.rbmcore.rest.models.recipe.subs;
+package de.regiobiomatch.rbmcore.rest.models.newrecipe;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,13 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class Ingredient {
-
+public class Alternative {
     private String name;
     private String amount;
     private String unit;
-    private String processing;
-    private String place;
-    private String creatorPersonName;
 }

@@ -33,5 +33,4 @@ public class RecipeController {
 
         return ResponseEntity.ok(recipeService.createRecipe(createRecipeDTO, currentCompany));
     }
-
 }
