@@ -28,4 +28,5 @@ public class NewRecipeDTO {
     private String saison;
     private List<String> diets;
     private String recipeImage;
+    private String companyId;
 }
