@@ -23,7 +23,11 @@ public class NewRecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<NewRecipeModel> createRecipe(@RequestBody NewRecipeDTO recipeDto) {
+    public ResponseEntity<?> createRecipe(@RequestBody NewRecipeDTO recipeDto) {
+        if (recipeDto.getCompanyId() == null || recipeDto.getCompanyId().isEmpty()) {
+            return ResponseEntity.badRequest().body("Company ID must be provided");
+        }
+
         NewRecipeModel savedRecipe = service.saveRecipe(recipeDto);
         return ResponseEntity.ok(savedRecipe);
     }
@@ -36,9 +40,13 @@ public class NewRecipeController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<NewRecipeModel>> getRecipesByCompanyId(
+    public ResponseEntity<?> getRecipesByCompanyId(
             @RequestParam String companyId,
             @PageableDefault(sort = "recipeName", direction = Sort.Direction.ASC) Pageable pageable) {
+        if (companyId == null || companyId.isEmpty()) {
+            return ResponseEntity.badRequest().body("Company ID must be provided");
+        }
+
         Page<NewRecipeModel> recipes = service.getRecipesByCompanyId(companyId, pageable);
         return ResponseEntity.ok(recipes);
     }
