@@ -18,4 +18,5 @@ public class NewIngredient {
     private boolean optional;
     private String note;
     private List<Alternative> alternatives;
+    private String nearbuyId;
 }
