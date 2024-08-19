@@ -1,9 +1,11 @@
 package de.regiobiomatch.rbmcore.rest.services;
 
+import de.regiobiomatch.rbmcore.rest.models.newmenuplan.NewEvent;
 import de.regiobiomatch.rbmcore.rest.models.newmenuplan.NewMenuPlan;
 import de.regiobiomatch.rbmcore.rest.models.newmenuplan.NewMenuPlanDTO;
 import de.regiobiomatch.rbmcore.rest.repositories.NewMenuPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +66,37 @@ public class NewMenuPlanService {
             }
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    public ResponseEntity<NewMenuPlan> updateEventInMenuPlan(String menuPlanId, String eventId, NewEvent eventDto, String companyId) {
+        Optional<NewMenuPlan> optionalMenuPlan = newMenuPlanRepository.findByIdAndCompanyId(menuPlanId, companyId);
+
+        if (optionalMenuPlan.isPresent()) {
+            NewMenuPlan menuPlan = optionalMenuPlan.get();
+            Optional<NewEvent> optionalEvent = menuPlan.getEvents().stream()
+                    .filter(event -> event.getId().equals(eventId))
+                    .findFirst();
+
+            if (optionalEvent.isPresent()) {
+                NewEvent event = optionalEvent.get();
+                event.setStart(eventDto.getStart());
+                event.setDescription(eventDto.getDescription());
+                event.setLocation(eventDto.getLocation());
+                event.setPortions(eventDto.getPortions());
+                event.setPortionsVegetarisch(eventDto.getPortionsVegetarisch());
+                event.setPortionsVegan(eventDto.getPortionsVegan());
+                event.setRepeatFrequency(eventDto.getRepeatFrequency());
+
+                NewMenuPlan updatedMenuPlan = newMenuPlanRepository.save(menuPlan);
+                return ResponseEntity.ok(updatedMenuPlan);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
         }
     }
 

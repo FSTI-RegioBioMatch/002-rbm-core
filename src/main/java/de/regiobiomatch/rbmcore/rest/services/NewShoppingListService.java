@@ -27,10 +27,18 @@ public class NewShoppingListService {
 
     public ResponseEntity<NewShoppingListModel> getShoppingListByIdAndCompanyId(String id, String companyId) {
         Optional<NewShoppingListModel> optionalShoppingList = newShoppingListRepository.findById(id);
-        return optionalShoppingList.filter(shoppingList -> shoppingList.getCreatedBy().equals(companyId))
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+
+        if (optionalShoppingList.isPresent()) {
+            NewShoppingListModel shoppingList = optionalShoppingList.get();
+            System.out.println("Retrieved ShoppingList: " + shoppingList);
+            System.out.println("ShoppingList CompanyId: " + shoppingList.getCompanyId());
+            if (shoppingList.getCompanyId().equals(companyId)) {
+                return ResponseEntity.ok(shoppingList);
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
+
 
     public List<NewShoppingListModel> getAllShoppingListsByCompanyId(String companyId) {
         return newShoppingListRepository.findByCompanyId(companyId);

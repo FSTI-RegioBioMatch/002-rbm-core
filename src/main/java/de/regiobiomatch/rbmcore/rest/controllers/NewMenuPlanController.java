@@ -1,5 +1,6 @@
 package de.regiobiomatch.rbmcore.rest.controllers;
 
+import de.regiobiomatch.rbmcore.rest.models.newmenuplan.NewEvent;
 import de.regiobiomatch.rbmcore.rest.models.newmenuplan.NewMenuPlan;
 import de.regiobiomatch.rbmcore.rest.models.newmenuplan.NewMenuPlanDTO;
 import de.regiobiomatch.rbmcore.rest.services.NewMenuPlanService;
@@ -50,4 +51,13 @@ public class NewMenuPlanController {
             @RequestParam String companyId) {
         return newMenuPlanService.deleteEventFromMenuPlan(menuPlanId, eventId, companyId);
     }
+    @PutMapping("/{menuPlanId}/events/{eventId}")
+    public ResponseEntity<?> updateEventInMenuPlan(
+            @PathVariable String menuPlanId,
+            @PathVariable String eventId,
+            @RequestBody NewEvent eventDto,
+            @RequestParam String companyId) {
+        return newMenuPlanService.updateEventInMenuPlan(menuPlanId, eventId, eventDto, companyId);
+    }
+
 }

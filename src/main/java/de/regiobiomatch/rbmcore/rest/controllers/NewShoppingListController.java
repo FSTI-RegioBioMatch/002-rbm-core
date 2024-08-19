@@ -25,9 +25,13 @@ public class NewShoppingListController {
     @GetMapping("/{id}")
     public ResponseEntity<NewShoppingListModel> getShoppingListById(
             @PathVariable String id,
-            @RequestHeader("Current-Company") String companyId) {
+            @RequestParam("companyId") String companyId) {
+        System.out.println("id: " + id);
+        System.out.println("companyId: " + companyId);
         return newShoppingListService.getShoppingListByIdAndCompanyId(id, companyId);
     }
+
+
 
     @GetMapping
     public ResponseEntity<List<NewShoppingListModel>> getAllShoppingListsByCompanyId(
