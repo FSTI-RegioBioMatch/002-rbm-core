@@ -32,6 +32,23 @@ public class NewRecipeService {
         return repository.findByCompanyId(companyId, pageable);
     }
 
+    public Page<NewRecipeModel> getRecipesByCompanyIdAndFilter(
+            String companyId,
+            String recipeName,
+            String[] saisons,
+            Pageable pageable
+    ) {
+        if (recipeName != null && !recipeName.isEmpty() && saisons != null && saisons.length > 0) {
+            return repository.findByCompanyIdAndRecipeNameAndSaisonIn(companyId, recipeName, saisons, pageable);
+        } else if (recipeName != null && !recipeName.isEmpty()) {
+            return repository.findByCompanyIdAndRecipeName(companyId, recipeName, pageable);
+        } else if (saisons != null && saisons.length > 0) {
+            return repository.findByCompanyIdAndSaisonIn(companyId, saisons, pageable);
+        } else {
+            return repository.findByCompanyId(companyId, pageable);
+        }
+    }
+
     private NewRecipeModel convertToEntity(NewRecipeDTO dto) {
         NewRecipeModel recipe = new NewRecipeModel();
         recipe.setRecipeName(dto.getRecipeName());
