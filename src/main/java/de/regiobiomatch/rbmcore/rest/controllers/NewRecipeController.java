@@ -23,7 +23,7 @@ public class NewRecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRecipe(@RequestBody NewRecipeDTO recipeDto) {
+    public ResponseEntity<?> createRecipe(@RequestBody NewRecipeDTO recipeDto, @RequestHeader("Current-Company") String currentCompany) {
         if (recipeDto.getCompanyId() == null || recipeDto.getCompanyId().isEmpty()) {
             return ResponseEntity.badRequest().body("Company ID must be provided");
         }
@@ -33,7 +33,7 @@ public class NewRecipeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NewRecipeModel> getRecipeById(@PathVariable String id) {
+    public ResponseEntity<NewRecipeModel> getRecipeById(@PathVariable String id, @RequestHeader("Current-Company") String currentCompany) {
         return service.getRecipeById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -42,7 +42,8 @@ public class NewRecipeController {
     @GetMapping
     public ResponseEntity<?> getRecipesByCompanyId(
             @RequestParam String companyId,
-            @PageableDefault(sort = "recipeName", direction = Sort.Direction.ASC) Pageable pageable) {
+            @PageableDefault(sort = "recipeName", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestHeader("Current-Company") String currentCompany) {
         if (companyId == null || companyId.isEmpty()) {
             return ResponseEntity.badRequest().body("Company ID must be provided");
         }
