@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(
+        origins = {"https://regiobiomatch.de", "http://localhost:4200"},
+        allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Current-Company"}
+)
 @RequestMapping("/api/v1/new-recipes")
 public class NewRecipeController {
     private final NewRecipeService service;
