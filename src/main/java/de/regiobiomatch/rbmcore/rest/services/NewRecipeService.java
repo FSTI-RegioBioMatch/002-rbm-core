@@ -6,6 +6,7 @@ import de.regiobiomatch.rbmcore.rest.repositories.NewRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -47,6 +48,20 @@ public class NewRecipeService {
         } else {
             return repository.findByCompanyId(companyId, pageable);
         }
+    }
+
+    public ResponseEntity<?> deleteRecipeById(String id) {
+        repository.deleteById(id);
+        if (repository.findById(id).isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    public NewRecipeModel updateRecipe(NewRecipeDTO recipeDto, String id) {
+        NewRecipeModel recipe = convertToEntity(recipeDto);
+        recipe.setId(id);
+        return repository.save(recipe);
     }
 
     private NewRecipeModel convertToEntity(NewRecipeDTO dto) {

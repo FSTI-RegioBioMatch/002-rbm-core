@@ -70,4 +70,20 @@ public class NewRecipeController {
         Page<NewRecipeModel> recipes = service.getRecipesByCompanyIdAndFilter(companyId, name, saisonsArray, pageable);
         return ResponseEntity.ok(recipes);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteRecipeById(@PathVariable String id, @RequestHeader("Current-Company") String currentCompany) {
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
+        }
+        return service.deleteRecipeById(id);
+    }
+
+    @PutMapping("/{id}")
+    public NewRecipeModel updateRecipe(@PathVariable String id, @RequestBody NewRecipeDTO recipeDto, @RequestHeader("Current-Company") String currentCompany) {
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
+        }
+        return service.updateRecipe(recipeDto, id);
+    }
+
 }
