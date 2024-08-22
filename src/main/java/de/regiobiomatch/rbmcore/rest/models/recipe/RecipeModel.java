@@ -1,7 +1,7 @@
 package de.regiobiomatch.rbmcore.rest.models.recipe;
 
-import de.regiobiomatch.rbmcore.rest.models.recipe.subs.Description;
-import de.regiobiomatch.rbmcore.rest.models.recipe.subs.Ingredient;
+import de.regiobiomatch.rbmcore.rest.models.recipe.Description;
+import de.regiobiomatch.rbmcore.rest.models.recipe.Ingredient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

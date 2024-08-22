@@ -1,4 +1,4 @@
-package de.regiobiomatch.rbmcore.rest.models.recipe.subs;
+package de.regiobiomatch.rbmcore.rest.models.recipe;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
