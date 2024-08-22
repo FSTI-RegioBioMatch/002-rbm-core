@@ -1,8 +1,8 @@
 package de.regiobiomatch.rbmcore.rest.recipeloader;
 
 import de.regiobiomatch.rbmcore.rest.models.recipe.RecipeModel;
-import de.regiobiomatch.rbmcore.rest.models.recipe.subs.Description;
-import de.regiobiomatch.rbmcore.rest.models.recipe.subs.Ingredient;
+import de.regiobiomatch.rbmcore.rest.models.recipe.Description;
+import de.regiobiomatch.rbmcore.rest.models.recipe.Ingredient;
 import de.regiobiomatch.rbmcore.rest.services.RecipeService;
 import java.io.IOException;
 import java.util.ArrayList;

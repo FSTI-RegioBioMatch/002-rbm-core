@@ -1,6 +1,6 @@
 package de.regiobiomatch.rbmcore.rest.models.shoppinglist.dtos;
 
-import de.regiobiomatch.rbmcore.rest.models.recipe.subs.Ingredient;
+import de.regiobiomatch.rbmcore.rest.models.recipe.Ingredient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
