@@ -11,8 +11,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(
+        origins = {"https://regiobiomatch.de", "http://localhost:4200"},
+        allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Current-Company"}
+)
 @RequestMapping("/api/v1/new-recipes")
 public class NewRecipeController {
     private final NewRecipeService service;
@@ -23,9 +28,13 @@ public class NewRecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRecipe(@RequestBody NewRecipeDTO recipeDto) {
+    public ResponseEntity<?> createRecipe(@RequestBody NewRecipeDTO recipeDto, @RequestHeader("Current-Company") String currentCompany) {
         if (recipeDto.getCompanyId() == null || recipeDto.getCompanyId().isEmpty()) {
             return ResponseEntity.badRequest().body("Company ID must be provided");
+        }
+
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
         }
 
         NewRecipeModel savedRecipe = service.saveRecipe(recipeDto);
@@ -33,7 +42,10 @@ public class NewRecipeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NewRecipeModel> getRecipeById(@PathVariable String id) {
+    public ResponseEntity<NewRecipeModel> getRecipeById(@PathVariable String id, @RequestHeader("Current-Company") String currentCompany) {
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
+        }
         return service.getRecipeById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -42,12 +54,36 @@ public class NewRecipeController {
     @GetMapping
     public ResponseEntity<?> getRecipesByCompanyId(
             @RequestParam String companyId,
-            @PageableDefault(sort = "recipeName", direction = Sort.Direction.ASC) Pageable pageable) {
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) List<String> saisons,
+            @PageableDefault(sort = "recipeName", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestHeader("Current-Company") String currentCompany) {
         if (companyId == null || companyId.isEmpty()) {
             return ResponseEntity.badRequest().body("Company ID must be provided");
         }
 
-        Page<NewRecipeModel> recipes = service.getRecipesByCompanyId(companyId, pageable);
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
+        }
+
+        String[] saisonsArray = saisons != null ? saisons.toArray(new String[0]) : new String[0];
+        Page<NewRecipeModel> recipes = service.getRecipesByCompanyIdAndFilter(companyId, name, saisonsArray, pageable);
         return ResponseEntity.ok(recipes);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteRecipeById(@PathVariable String id, @RequestHeader("Current-Company") String currentCompany) {
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
+        }
+        return service.deleteRecipeById(id);
+    }
+
+    @PutMapping("/{id}")
+    public NewRecipeModel updateRecipe(@PathVariable String id, @RequestBody NewRecipeDTO recipeDto, @RequestHeader("Current-Company") String currentCompany) {
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
+        }
+        return service.updateRecipe(recipeDto, id);
+    }
+
 }

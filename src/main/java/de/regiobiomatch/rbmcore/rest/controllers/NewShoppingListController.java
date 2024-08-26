@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(
+        origins = {"https://regiobiomatch.de", "http://localhost:4200"},
+        allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Current-Company"}
+)
 @RequestMapping("/api/v1/shoppinglists")
 public class NewShoppingListController {
 
@@ -25,9 +28,13 @@ public class NewShoppingListController {
     @GetMapping("/{id}")
     public ResponseEntity<NewShoppingListModel> getShoppingListById(
             @PathVariable String id,
-            @RequestHeader("Current-Company") String companyId) {
+            @RequestParam("companyId") String companyId) {
+        System.out.println("id: " + id);
+        System.out.println("companyId: " + companyId);
         return newShoppingListService.getShoppingListByIdAndCompanyId(id, companyId);
     }
+
+
 
     @GetMapping
     public ResponseEntity<List<NewShoppingListModel>> getAllShoppingListsByCompanyId(

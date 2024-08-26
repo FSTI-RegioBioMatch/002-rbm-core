@@ -6,6 +6,7 @@ import de.regiobiomatch.rbmcore.rest.repositories.NewRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -30,6 +31,37 @@ public class NewRecipeService {
 
     public Page<NewRecipeModel> getRecipesByCompanyId(String companyId, Pageable pageable) {
         return repository.findByCompanyId(companyId, pageable);
+    }
+
+    public Page<NewRecipeModel> getRecipesByCompanyIdAndFilter(
+            String companyId,
+            String recipeName,
+            String[] saisons,
+            Pageable pageable
+    ) {
+        if (recipeName != null && !recipeName.isEmpty() && saisons != null && saisons.length > 0) {
+            return repository.findByCompanyIdAndRecipeNameAndSaisonIn(companyId, recipeName, saisons, pageable);
+        } else if (recipeName != null && !recipeName.isEmpty()) {
+            return repository.findByCompanyIdAndRecipeName(companyId, recipeName, pageable);
+        } else if (saisons != null && saisons.length > 0) {
+            return repository.findByCompanyIdAndSaisonIn(companyId, saisons, pageable);
+        } else {
+            return repository.findByCompanyId(companyId, pageable);
+        }
+    }
+
+    public ResponseEntity<?> deleteRecipeById(String id) {
+        repository.deleteById(id);
+        if (repository.findById(id).isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    public NewRecipeModel updateRecipe(NewRecipeDTO recipeDto, String id) {
+        NewRecipeModel recipe = convertToEntity(recipeDto);
+        recipe.setId(id);
+        return repository.save(recipe);
     }
 
     private NewRecipeModel convertToEntity(NewRecipeDTO dto) {

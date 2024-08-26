@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(
+        origins = {"https://regiobiomatch.de", "http://localhost:4200"},
+        allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Current-Company"}
+)
 @RestController
 @RequestMapping("/api/v1/shopping-list")
 public class ShoppingListController {
