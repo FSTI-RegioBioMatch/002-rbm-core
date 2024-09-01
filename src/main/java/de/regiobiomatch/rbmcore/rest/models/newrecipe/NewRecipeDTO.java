@@ -23,8 +23,8 @@ public class NewRecipeDTO {
     private String energie;
     private String portionen;
     private String besonderheiten;
-    private String essensgaeste;
-    private String allergene;
+    private List<String> essensgaeste; // Changed to List<String> for multi-select
+    private List<String> allergene;    // Changed to List<String> for multi-select
     private String saison;
     private List<String> diets;
     private String recipeImage;
