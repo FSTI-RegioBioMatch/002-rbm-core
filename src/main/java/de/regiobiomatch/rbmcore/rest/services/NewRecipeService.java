@@ -39,16 +39,28 @@ public class NewRecipeService {
             String[] saisons,
             Pageable pageable
     ) {
+        Page<NewRecipeModel> recipes = null;
+
         if (recipeName != null && !recipeName.isEmpty() && saisons != null && saisons.length > 0) {
-            return repository.findByCompanyIdAndRecipeNameAndSaisonIn(companyId, recipeName, saisons, pageable);
+            recipes = repository.findByCompanyIdAndRecipeNameAndSaisonIn(companyId, recipeName, saisons, pageable);
         } else if (recipeName != null && !recipeName.isEmpty()) {
-            return repository.findByCompanyIdAndRecipeName(companyId, recipeName, pageable);
+            recipes = repository.findByCompanyIdAndRecipeName(companyId, recipeName, pageable);
         } else if (saisons != null && saisons.length > 0) {
-            return repository.findByCompanyIdAndSaisonIn(companyId, saisons, pageable);
+            recipes = repository.findByCompanyIdAndSaisonIn(companyId, saisons, pageable);
         } else {
-            return repository.findByCompanyId(companyId, pageable);
+            recipes = repository.findByCompanyId(companyId, pageable);
         }
+
+        // Clear images from each step in each recipe
+        recipes.forEach(recipe -> {
+            if (recipe.getSteps() != null) {
+                recipe.getSteps().forEach(step -> step.setImages(null)); // or step.setImages(Collections.emptyList());
+            }
+        });
+
+        return recipes;
     }
+
 
     public ResponseEntity<?> deleteRecipeById(String id) {
         repository.deleteById(id);
