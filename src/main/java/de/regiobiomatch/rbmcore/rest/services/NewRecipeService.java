@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -95,4 +97,16 @@ public class NewRecipeService {
         recipe.setCompanyId(dto.getCompanyId());
         return recipe;
     }
+
+    public List<String> getStepImagesByRecipeIdAndStepIndex(String recipeId, int stepIndex) {
+        Optional<NewRecipeModel> recipeOptional = repository.findById(recipeId);
+        if (recipeOptional.isPresent()) {
+            NewRecipeModel recipe = recipeOptional.get();
+            if (recipe.getSteps() != null && stepIndex < recipe.getSteps().size()) {
+                return recipe.getSteps().get(stepIndex).getImages();
+            }
+        }
+        return Collections.emptyList(); // Return an empty list if not found
+    }
+
 }

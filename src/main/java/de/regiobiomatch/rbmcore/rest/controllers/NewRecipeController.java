@@ -2,6 +2,7 @@ package de.regiobiomatch.rbmcore.rest.controllers;
 
 import de.regiobiomatch.rbmcore.rest.models.newrecipe.NewRecipeDTO;
 import de.regiobiomatch.rbmcore.rest.models.newrecipe.NewRecipeModel;
+import de.regiobiomatch.rbmcore.rest.models.newrecipe.Step;
 import de.regiobiomatch.rbmcore.rest.services.NewRecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +12,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(
@@ -42,13 +45,43 @@ public class NewRecipeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NewRecipeModel> getRecipeById(@PathVariable String id, @RequestHeader("Current-Company") String currentCompany) {
+    public ResponseEntity<NewRecipeModel> getRecipeById(
+            @PathVariable String id,
+            @RequestHeader("Current-Company") String currentCompany,
+            @RequestParam(value = "includeImages", defaultValue = "false") boolean includeImages) {
+
         if (currentCompany == null) {
             throw new IllegalArgumentException("Current-Company header is required");
         }
-        return service.getRecipeById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+
+        Optional<NewRecipeModel> recipeOptional = service.getRecipeById(id);
+
+        if (recipeOptional.isPresent()) {
+            NewRecipeModel recipe = recipeOptional.get();
+            if (!includeImages) {
+                recipe.getSteps().forEach(step -> step.setImages(Collections.emptyList()));
+            }
+            return ResponseEntity.ok(recipe);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{recipeId}/steps/{stepIndex}/images")
+    public ResponseEntity<List<String>> getStepImages(
+            @PathVariable String recipeId,
+            @PathVariable int stepIndex,
+            @RequestHeader("Current-Company") String currentCompany) {
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
+        }
+
+        List<String> images = service.getStepImagesByRecipeIdAndStepIndex(recipeId, stepIndex);
+        if (images.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(images);
+        }
     }
 
     @GetMapping
