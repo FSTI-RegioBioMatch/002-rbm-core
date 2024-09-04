@@ -38,7 +38,7 @@ public class RecipeLoader {
   CommandLineRunner loadRecipes(RecipeService recipeService) {
     return args -> {
       if (isLoadData) {
-        log.info("Loading recipes from JSON file");
+        //log.info("Loading recipes from JSON file");
         ObjectMapper objectMapper = JsonMapper.builder()
             .enable(JsonReadFeature.ALLOW_NON_NUMERIC_NUMBERS.mappedFeature())
             .build();
@@ -46,7 +46,7 @@ public class RecipeLoader {
         try {
           root = objectMapper.readTree(resource.getFile());
         } catch (IOException e) {
-          log.severe("Failed to read JSON file: " + e.getMessage());
+          //log.severe("Failed to read JSON file: " + e.getMessage());
           return;
         }
 
@@ -55,7 +55,7 @@ public class RecipeLoader {
         for (JsonNode node : root) {
           try {
             if (containsNaN(node)) {
-              log.warning("Skipping recipe due to NaN value: " + node.get("title").asText());
+              //log.warning("Skipping recipe due to NaN value: " + node.get("title").asText());
               continue;
             }
 
@@ -97,13 +97,13 @@ public class RecipeLoader {
 
             recipes.add(recipe);
           } catch (Exception e) {
-            log.severe("Error processing recipe: " + node.get("title").asText() + " - " + e.getMessage());
+            //log.severe("Error processing recipe: " + node.get("title").asText() + " - " + e.getMessage());
           }
         }
 
         recipeService.deleteAllAndSaveAll(recipes);
       } else {
-        log.info("Skipping loading recipes from JSON file");
+        //log.info("Skipping loading recipes from JSON file");
       }
     };
   }
