@@ -8,9 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,14 +31,19 @@ public class MappedOffersIngredientsController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createMappedOffersIngredients(@RequestBody MappedOffersIngredientsDTO dto, @RequestHeader("Current-Company") String currentCompany) {
+    public ResponseEntity<?> createMappedOffersIngredients(
+            @RequestBody MappedOffersIngredientsDTO dto,
+            @RequestHeader("Current-Company") String currentCompany) {
+
         if (dto.getShoppingListId() == null || dto.getShoppingListId().isEmpty()) {
             return ResponseEntity.badRequest().body("Shopping List ID must be provided");
         }
 
         if (currentCompany == null) {
-            throw new IllegalArgumentException("Current-Company header is required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Current-Company header is required");
         }
+
         dto.setCompanyId(currentCompany);
         MappedOffersIngredientsModel savedModel = service.saveMappedOffersIngredients(dto);
         return ResponseEntity.ok(savedModel);
@@ -48,12 +55,17 @@ public class MappedOffersIngredientsController {
             @RequestHeader("Current-Company") String currentCompany) {
 
         if (currentCompany == null) {
-            throw new IllegalArgumentException("Current-Company header is required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
         }
 
-        Optional<MappedOffersIngredientsModel> modelOptional = service.getMappedOffersIngredientsById(id);
+        Optional<MappedOffersIngredientsModel> modelOptional = service.getMappedOffersIngredientsById(id, currentCompany);
 
-        return modelOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        if (modelOptional.isPresent()) {
+            return ResponseEntity.ok(modelOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @GetMapping
@@ -63,11 +75,11 @@ public class MappedOffersIngredientsController {
             @RequestHeader("Current-Company") String currentCompany) {
 
         if (companyId == null || companyId.isEmpty()) {
-            return ResponseEntity.badRequest().body(null); // Body is null in case of error.
+            return ResponseEntity.badRequest().body(null);
         }
 
-        if (currentCompany == null) {
-            throw new IllegalArgumentException("Current-Company header is required");
+        if (currentCompany == null || !currentCompany.equals(companyId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 
         Page<MappedOffersIngredientsModel> models = service.getMappedOffersIngredientsByCompanyId(companyId, pageable);
@@ -75,38 +87,57 @@ public class MappedOffersIngredientsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMappedOffersIngredientsById(@PathVariable String id, @RequestHeader("Current-Company") String currentCompany) {
+    public ResponseEntity<?> deleteMappedOffersIngredientsById(
+            @PathVariable String id,
+            @RequestHeader("Current-Company") String currentCompany) {
+
         if (currentCompany == null) {
-            throw new IllegalArgumentException("Current-Company header is required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Current-Company header is required");
         }
-        return service.deleteMappedOffersIngredientsById(id);
+
+        return service.deleteMappedOffersIngredientsById(id, currentCompany);
     }
 
     @PutMapping("/{id}")
-    public MappedOffersIngredientsModel updateMappedOffersIngredients(@PathVariable String id, @RequestBody MappedOffersIngredientsDTO dto, @RequestHeader("Current-Company") String currentCompany) {
+    public ResponseEntity<?> updateMappedOffersIngredients(
+            @PathVariable String id,
+            @RequestBody MappedOffersIngredientsDTO dto,
+            @RequestHeader("Current-Company") String currentCompany) {
+
         if (currentCompany == null) {
-            throw new IllegalArgumentException("Current-Company header is required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Current-Company header is required");
         }
-        return service.updateMappedOffersIngredients(dto, id);
+
+        Optional<MappedOffersIngredientsModel> updatedModel = service.updateMappedOffersIngredients(dto, id, currentCompany);
+
+        if (updatedModel.isPresent()) {
+            return ResponseEntity.ok(updatedModel.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    // New endpoint to get mapped offers by shoppingListId
+    // Endpoint to get mapped offers by shoppingListId
     @GetMapping("/shopping-list/{shoppingListId}")
     public ResponseEntity<List<MappedOffersIngredientsModel>> getMappedOffersIngredientsByShoppingListId(
             @PathVariable String shoppingListId,
             @RequestHeader("Current-Company") String currentCompany) {
 
         if (shoppingListId == null || shoppingListId.isEmpty()) {
-            return ResponseEntity.badRequest().body(null); // Body is null in case of error.
+            return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
         if (currentCompany == null) {
-            throw new IllegalArgumentException("Current-Company header is required");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.emptyList());
         }
 
-        List<MappedOffersIngredientsModel> models = service.getMappedOffersIngredientsByShoppingListId(shoppingListId);
+        List<MappedOffersIngredientsModel> models = service.getMappedOffersIngredientsByShoppingListIdAndCompanyId(shoppingListId, currentCompany);
+
         if (models.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         return ResponseEntity.ok(models);

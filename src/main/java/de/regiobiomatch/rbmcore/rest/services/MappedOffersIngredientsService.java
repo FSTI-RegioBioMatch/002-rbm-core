@@ -1,4 +1,5 @@
 package de.regiobiomatch.rbmcore.rest.services;
+
 import de.regiobiomatch.rbmcore.rest.models.newshoppinglist.MappedOffersIngredientsDTO;
 import de.regiobiomatch.rbmcore.rest.models.newshoppinglist.MappedOffersIngredientsModel;
 import de.regiobiomatch.rbmcore.rest.repositories.MappedOffersIngredientsRepository;
@@ -6,6 +7,7 @@ import de.regiobiomatch.rbmcore.utils.MappedOffersIngredientsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -26,28 +28,38 @@ public class MappedOffersIngredientsService {
         return repository.save(model);
     }
 
-    public Optional<MappedOffersIngredientsModel> getMappedOffersIngredientsById(String id) {
-        return repository.findById(id);
+    public Optional<MappedOffersIngredientsModel> getMappedOffersIngredientsById(String id, String companyId) {
+        return repository.findByIdAndCompanyId(id, companyId);
     }
 
     public Page<MappedOffersIngredientsModel> getMappedOffersIngredientsByCompanyId(String companyId, Pageable pageable) {
         return repository.findByCompanyId(companyId, pageable);
     }
 
-    public ResponseEntity<?> deleteMappedOffersIngredientsById(String id) {
-        repository.deleteById(id);
-        if (repository.findById(id).isPresent()) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> deleteMappedOffersIngredientsById(String id, String companyId) {
+        Optional<MappedOffersIngredientsModel> modelOptional = repository.findByIdAndCompanyId(id, companyId);
+        if (modelOptional.isPresent()) {
+            repository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok().build();
     }
 
-    public MappedOffersIngredientsModel updateMappedOffersIngredients(MappedOffersIngredientsDTO dto, String id) {
-        MappedOffersIngredientsModel model = MappedOffersIngredientsMapper.toModel(dto);
-        model.setShoppingListId(id);
-        return repository.save(model);
+    public Optional<MappedOffersIngredientsModel> updateMappedOffersIngredients(MappedOffersIngredientsDTO dto, String id, String companyId) {
+        Optional<MappedOffersIngredientsModel> existingModel = repository.findByIdAndCompanyId(id, companyId);
+        if (existingModel.isPresent()) {
+            MappedOffersIngredientsModel model = MappedOffersIngredientsMapper.toModel(dto);
+            model.setId(id); // Ensure the ID remains the same
+            model.setCompanyId(companyId); // Ensure the company ID remains the same
+            MappedOffersIngredientsModel updatedModel = repository.save(model);
+            return Optional.of(updatedModel);
+        } else {
+            return Optional.empty();
+        }
     }
-    public List<MappedOffersIngredientsModel> getMappedOffersIngredientsByShoppingListId(String shoppingListId) {
-        return repository.findByShoppingListId(shoppingListId);
+
+    public List<MappedOffersIngredientsModel> getMappedOffersIngredientsByShoppingListIdAndCompanyId(String shoppingListId, String companyId) {
+        return repository.findByShoppingListIdAndCompanyId(shoppingListId, companyId);
     }
 }
