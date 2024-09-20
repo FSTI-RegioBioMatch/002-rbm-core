@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,5 +46,8 @@ public class MappedOffersIngredientsService {
         MappedOffersIngredientsModel model = MappedOffersIngredientsMapper.toModel(dto);
         model.setShoppingListId(id);
         return repository.save(model);
+    }
+    public List<MappedOffersIngredientsModel> getMappedOffersIngredientsByShoppingListId(String shoppingListId) {
+        return repository.findByShoppingListId(shoppingListId);
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -87,5 +88,27 @@ public class MappedOffersIngredientsController {
             throw new IllegalArgumentException("Current-Company header is required");
         }
         return service.updateMappedOffersIngredients(dto, id);
+    }
+
+    // New endpoint to get mapped offers by shoppingListId
+    @GetMapping("/shopping-list/{shoppingListId}")
+    public ResponseEntity<List<MappedOffersIngredientsModel>> getMappedOffersIngredientsByShoppingListId(
+            @PathVariable String shoppingListId,
+            @RequestHeader("Current-Company") String currentCompany) {
+
+        if (shoppingListId == null || shoppingListId.isEmpty()) {
+            return ResponseEntity.badRequest().body(null); // Body is null in case of error.
+        }
+
+        if (currentCompany == null) {
+            throw new IllegalArgumentException("Current-Company header is required");
+        }
+
+        List<MappedOffersIngredientsModel> models = service.getMappedOffersIngredientsByShoppingListId(shoppingListId);
+        if (models.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(models);
     }
 }

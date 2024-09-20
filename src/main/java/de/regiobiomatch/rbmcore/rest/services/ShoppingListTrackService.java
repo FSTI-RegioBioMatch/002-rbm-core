@@ -33,7 +33,6 @@ public class ShoppingListTrackService {
     public List<ShoppingListOffersPurchaseIntendPriceRequestTrackModel> findByShoppingListId(String shoppingListId) {
         return repository.findByShoppingListId(shoppingListId);
     }
-
     // Delete a track record by ID
     public void deleteById(String id) {
         repository.deleteById(id);
