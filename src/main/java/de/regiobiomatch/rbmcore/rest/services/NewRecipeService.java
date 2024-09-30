@@ -1,8 +1,11 @@
 package de.regiobiomatch.rbmcore.rest.services;
 
+import de.regiobiomatch.rbmcore.rabbitMQ.services.RabbitRecipeService;
 import de.regiobiomatch.rbmcore.rest.models.newrecipe.NewRecipeDTO;
 import de.regiobiomatch.rbmcore.rest.models.newrecipe.NewRecipeModel;
 import de.regiobiomatch.rbmcore.rest.repositories.NewRecipeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,7 @@ import java.util.Optional;
 @Service
 public class NewRecipeService {
     private final NewRecipeRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(NewRecipeService.class);
 
     @Autowired
     public NewRecipeService(NewRecipeRepository repository) {
@@ -109,4 +113,10 @@ public class NewRecipeService {
         return Collections.emptyList(); // Return an empty list if not found
     }
 
+    public List<NewRecipeModel> getAllRecipes() {
+        List<NewRecipeModel> recipes = repository.findAll();
+        logger.info("Retrieved all recipes: {}", recipes);
+
+        return recipes;
+    }
 }
