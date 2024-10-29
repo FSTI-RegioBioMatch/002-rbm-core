@@ -1,6 +1,5 @@
 package de.regiobiomatch.rbmcore.rabbitMQ.services;
 
-import de.regiobiomatch.rbmcore.rest.controllers.LogController;
 import de.regiobiomatch.rbmcore.rest.services.NewRecipeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ public class RabbitRecipeService {
   @Autowired
   private NewRecipeService newRecipeService;
 
-  @RabbitListener(queues = RabbitMQConfig.REQUEST_QUEUE)
+  @RabbitListener(queues = RabbitMQConfig.RECIPE_REQUEST_QUEUE)
   public RecipeResponse handleRecipeRequest(RecipeRequest request) {
     logger.info("Received recipe request: {}", request);
 
@@ -27,5 +26,4 @@ public class RabbitRecipeService {
     }
     return new RecipeResponse();
   }
-
 }

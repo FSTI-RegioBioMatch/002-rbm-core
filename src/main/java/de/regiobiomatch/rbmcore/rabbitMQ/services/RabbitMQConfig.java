@@ -20,23 +20,44 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-  public static final String REQUEST_EXCHANGE = "rbm-core.exchange";
-  public static final String REQUEST_QUEUE = "rbm-core.request.queue";
-  public static final String REQUEST_ROUTING_KEY = "rbm-core.request";
+  public static final String RECIPE_REQUEST_EXCHANGE = "rbm-core.recipe.exchange";
+  public static final String RECIPE_REQUEST_QUEUE = "rbm-core.recipe.request.queue";
+  public static final String RECIPE_REQUEST_ROUTING_KEY = "rbm-core.recipe.request";
 
+  public static final String USER_PROFILE_REQUEST_EXCHANGE = "rbm-core.userprofile.exchange";
+  public static final String USER_PROFILE_REQUEST_QUEUE = "rbm-core.userprofile.request.queue";
+  public static final String USER_PROFILE_REQUEST_ROUTING_KEY = "rbm-core.userprofile.request";
+
+  // Recipe exchange, queue, and binding
   @Bean
-  public DirectExchange requestExchange() {
-    return new DirectExchange(REQUEST_EXCHANGE);
+  public DirectExchange recipeRequestExchange() {
+    return new DirectExchange(RECIPE_REQUEST_EXCHANGE);
   }
 
   @Bean
-  public Queue requestQueue() {
-    return new Queue(REQUEST_QUEUE);
+  public Queue recipeRequestQueue() {
+    return new Queue(RECIPE_REQUEST_QUEUE);
   }
 
   @Bean
-  public Binding binding(Queue requestQueue, DirectExchange requestExchange) {
-    return BindingBuilder.bind(requestQueue).to(requestExchange).with(REQUEST_ROUTING_KEY);
+  public Binding recipeRequestBinding(Queue recipeRequestQueue, DirectExchange recipeRequestExchange) {
+    return BindingBuilder.bind(recipeRequestQueue).to(recipeRequestExchange).with(RECIPE_REQUEST_ROUTING_KEY);
+  }
+
+  // User profile exchange, queue, and binding
+  @Bean
+  public DirectExchange userProfileRequestExchange() {
+    return new DirectExchange(USER_PROFILE_REQUEST_EXCHANGE);
+  }
+
+  @Bean
+  public Queue userProfileRequestQueue() {
+    return new Queue(USER_PROFILE_REQUEST_QUEUE);
+  }
+
+  @Bean
+  public Binding userProfileRequestBinding(Queue userProfileRequestQueue, DirectExchange userProfileRequestExchange) {
+    return BindingBuilder.bind(userProfileRequestQueue).to(userProfileRequestExchange).with(USER_PROFILE_REQUEST_ROUTING_KEY);
   }
 
   @Bean
