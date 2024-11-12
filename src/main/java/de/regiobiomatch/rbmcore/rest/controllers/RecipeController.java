@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(
-        origins = {"https://regiobiomatch.de", "http://localhost:4200"},
+        origins = {"https://app.regiobiomatch.de", "http://localhost:4200"},
         allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Current-Company"}
 )
 @RequestMapping("/api/v1/recipes")

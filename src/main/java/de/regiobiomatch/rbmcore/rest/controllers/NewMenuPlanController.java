@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/new-menu-plans")
 @CrossOrigin(
-        origins = {"https://regiobiomatch.de", "http://localhost:4200"},
+        origins = {"https://app.regiobiomatch.de", "http://localhost:4200"},
         allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Current-Company"}
 )
 public class NewMenuPlanController {

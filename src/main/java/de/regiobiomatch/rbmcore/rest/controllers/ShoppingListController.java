@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(
-        origins = {"https://regiobiomatch.de", "http://localhost:4200"},
+        origins = {"https://app.regiobiomatch.de", "http://localhost:4200"},
         allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Current-Company"}
 )
 @RestController

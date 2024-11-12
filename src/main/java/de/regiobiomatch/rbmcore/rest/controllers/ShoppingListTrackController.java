@@ -12,7 +12,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/shopping-list-track")
 @CrossOrigin(
-        origins = {"https://regiobiomatch.de", "http://localhost:4200"},
+        origins = {"https://app.regiobiomatch.de", "http://localhost:4200"},
         allowedHeaders = {"Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Current-Company"}
 )
 public class ShoppingListTrackController {
